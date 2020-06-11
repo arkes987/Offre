@@ -14,7 +14,7 @@ namespace Offre
 
             try
             {
-                logger.Debug("init main");
+                logger.Debug("Starting Offre API");
                 CreateHostBuilder(args).Build().Run();
             }
             catch (Exception exception)

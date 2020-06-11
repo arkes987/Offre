@@ -12,3 +12,4 @@ Created after working hours to improve skills. Focused on simplicity, speed of a
 * .NET Core 3.1
 * NLog
 * MSTest
+* Swagger

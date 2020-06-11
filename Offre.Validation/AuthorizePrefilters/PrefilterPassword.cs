@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Text.RegularExpressions;
 
 namespace Offre.Validation.AuthorizePrefilters
 {
@@ -7,9 +6,6 @@ namespace Offre.Validation.AuthorizePrefilters
     {
         private const int MaxPasswordLength = 128;
         private const short MinPasswordLength = 8;
-
-        private const string PasswordRegex =
-            "/(?=(.*[0-9]))(?=.*[\\!@#$%^&*()\\\\[\\]{}\\-_+=~`|:;\"'<>,./?])(?=.*[a-z])(?=(.*[A-Z]))(?=(.*)).{8,}/ ";
         private readonly string _data;
         public PrefilterPassword(string data)
         {
@@ -46,11 +42,15 @@ namespace Offre.Validation.AuthorizePrefilters
 
         private bool MatchPassword()
         {
-            var regex = new Regex(PasswordRegex);
+            var specialCharRegex = OffreRegex.HasSpecialChar;
+            var upperCharRegex = OffreRegex.HasUpperChar;
+            var numberRegex = OffreRegex.HasNumber;
 
-            var match = regex.Match(_data);
+            var specialCharMatch = specialCharRegex.Match(_data).Success;
+            var upperCharMatch = upperCharRegex.Match(_data).Success;
+            var numberMatch = numberRegex.Match(_data).Success;
 
-            return match.Success;
+            return specialCharMatch && upperCharMatch && numberMatch;
         }
     }
 }

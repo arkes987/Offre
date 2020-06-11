@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Net.Mail;
 using System.Text.RegularExpressions;
 
 namespace Offre.Validation.AuthorizePrefilters
@@ -46,11 +47,16 @@ namespace Offre.Validation.AuthorizePrefilters
 
         private bool MatchEmail()
         {
-            var regex = new Regex(EmailRegex);
+            try
+            {
+                var m = new MailAddress(_data);
 
-            var match = regex.Match(_data);
-
-            return match.Success;
+                return true;
+            }
+            catch (FormatException)
+            {
+                return false;
+            }
         }
     }
 }

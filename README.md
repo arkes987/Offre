@@ -4,7 +4,7 @@ Created after working hours to improve skills. Focused on simplicity, speed of a
 
 ## Build status
 
-![.NET Core](https://github.com/arkes987/Offre/workflows/.NET%20Core/badge.svg)
+![Offre](https://github.com/arkes987/Offre/workflows/Offre/badge.svg?branch=master)
 
 
 ## Technologies

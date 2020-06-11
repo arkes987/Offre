@@ -6,6 +6,9 @@ Created after working hours to improve skills. Focused on simplicity, speed of a
 
 ![Offre](https://github.com/arkes987/Offre/workflows/Offre/badge.svg?branch=master)
 
+## Tests status
+
+![Offre Tests](https://github.com/arkes987/Offre/workflows/Offre%20Tests/badge.svg)
 
 ## Technologies
 

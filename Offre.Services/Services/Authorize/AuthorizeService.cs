@@ -24,7 +24,7 @@ namespace Offre.Services.Services.Authorize
                 //query db for user
 
                 //generate JWT token
-                var token = _authorizeLogic.GenerateToken();
+                var token = _authorizeLogic.GenerateToken(0);
 
                 return new AuthorizeModel
                 {

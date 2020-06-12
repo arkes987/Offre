@@ -1,7 +1,9 @@
-﻿namespace Offre.Services.Interfaces.Authorize
+﻿using Offre.Data.Models.Authorize;
+
+namespace Offre.Services.Interfaces.Authorize
 {
     public interface IAuthorizeService
     {
-        object TryAuthorizeUser(string login, string password);
+        AuthorizeModel TryAuthorizeUser(string login, string password);
     }
 }

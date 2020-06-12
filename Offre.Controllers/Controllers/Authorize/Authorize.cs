@@ -1,8 +1,8 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Offre.Controllers.Dto.Authorize;
+using Offre.Data.Models.Authorize;
 using Offre.Services.Interfaces.Authorize;
-using Offre.Validation.AuthorizePrefilters;
-using System;
 
 namespace Offre.Controllers.Controllers.Authorize
 {
@@ -25,12 +25,18 @@ namespace Offre.Controllers.Controllers.Authorize
 
             if (user == null)
             {
-                return NotFound();
+                return BadRequest("Invalid login or password.");
             }
-            else
+
+            return Ok(ToAuthorizeResponseDto(user));
+        }
+
+        private AuthorizeResponseDto ToAuthorizeResponseDto(AuthorizeModel authorizeModel)
+        {
+            return new AuthorizeResponseDto
             {
-                throw new NotImplementedException();
-            }
+                Secret = authorizeModel.Secret
+            };
         }
     }
 }

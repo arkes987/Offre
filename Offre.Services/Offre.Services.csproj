@@ -9,6 +9,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\Offre.Data\Offre.Data.csproj" />
     <ProjectReference Include="..\Offre.Logic\Offre.Logic.csproj" />
     <ProjectReference Include="..\Offre.Validation\Offre.Validation.csproj" />
   </ItemGroup>

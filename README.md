@@ -16,3 +16,5 @@ Created after working hours to improve skills. Focused on simplicity, speed of a
 * NLog
 * MSTest
 * Swagger
+* Docker
+* Entity Framework Core

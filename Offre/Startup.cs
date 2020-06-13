@@ -1,9 +1,14 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.OpenApi.Models;
+using Offre.Logic.Authorize;
+using Offre.Logic.Interfaces.Authorize;
+using Offre.Services.Interfaces.Authorize;
+using Offre.Services.Services.Authorize;
 
 namespace Offre
 {
@@ -20,6 +25,10 @@ namespace Offre
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddControllers();
+
+            services.AddScoped(typeof(IAuthorizeService), typeof(AuthorizeService));
+            services.AddScoped(typeof(IAuthorizeLogic), typeof(AuthorizeLogic));
+
 
             services.AddSwaggerGen(c =>
             {

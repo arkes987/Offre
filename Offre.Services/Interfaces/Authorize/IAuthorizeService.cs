@@ -1,9 +1,10 @@
-﻿using Offre.Data.Models.Authorize;
+﻿using System.Threading.Tasks;
+using Offre.Data.Models.Authorize;
 
 namespace Offre.Services.Interfaces.Authorize
 {
     public interface IAuthorizeService
     {
-        AuthorizeModel TryAuthorizeUser(string login, string password);
+        Task<AuthorizeModel> TryAuthorizeUser(string login, string password);
     }
 }

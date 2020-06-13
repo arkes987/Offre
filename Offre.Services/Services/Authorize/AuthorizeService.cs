@@ -1,7 +1,11 @@
-﻿using Offre.Data.Models.Authorize;
+﻿using Offre.Data;
+using Offre.Data.Models.Authorize;
 using Offre.Logic.Interfaces.Authorize;
 using Offre.Services.Interfaces.Authorize;
 using Offre.Validation.AuthorizePrefilters;
+using System.Linq;
+using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore;
 
 namespace Offre.Services.Services.Authorize
 {
@@ -13,7 +17,7 @@ namespace Offre.Services.Services.Authorize
             _authorizeLogic = authorizeLogic;
         }
 
-        public AuthorizeModel TryAuthorizeUser(string login, string password)
+        public async Task<AuthorizeModel> TryAuthorizeUser(string login, string password)
         {
             var loginPrefilterResult = new PrefilterLogin(login).MatchPrefilter();
             var passwordPrefilterResult = new PrefilterPassword(password).MatchPrefilter();
@@ -23,17 +27,27 @@ namespace Offre.Services.Services.Authorize
 
                 //query db for user
 
-                //generate JWT token
-                var token = _authorizeLogic.GenerateToken(0);
-
-                return new AuthorizeModel
+                using (var db = new OffreContext())
                 {
-                    Secret = token
-                };
+                    var user = await db.Users.SingleOrDefaultAsync(x => x.Email.Equals(login) && x.Password.Equals(password));
+
+                    if (user != null)
+                    {
+                        //generate JWT token
+                        var token = _authorizeLogic.GenerateToken(user.Id);
+
+                        return new AuthorizeModel
+                        {
+                            Id = user.Id,
+                            Email = user.Email,
+                            Token = token
+                        };
+                    }
+
+                }
             }
 
-
-            return new AuthorizeModel();
+            return null;
         }
     }
 }

@@ -10,7 +10,7 @@ namespace Offre.Controllers.Controllers.Authorize
 {
 
     [ApiController]
-    [Route("[controller]")]
+    [Route("authorize")]
     public class Authorize : ControllerBase
     {
         private readonly IAuthorizeService _authorizeService;

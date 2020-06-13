@@ -3,7 +3,7 @@
 namespace Offre.Controllers.Controllers.Offer
 {
     [ApiController]
-    [Route("[controller]")]
+    [Route("offer")]
     public class Offer : ControllerBase
     {
         [HttpGet]

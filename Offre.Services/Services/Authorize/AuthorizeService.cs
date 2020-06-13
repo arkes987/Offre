@@ -12,9 +12,11 @@ namespace Offre.Services.Services.Authorize
     public class AuthorizeService : IAuthorizeService
     {
         private readonly IAuthorizeLogic _authorizeLogic;
-        public AuthorizeService(IAuthorizeLogic authorizeLogic)
+        private readonly IOffreContext _offreContext;
+        public AuthorizeService(IAuthorizeLogic authorizeLogic, IOffreContext offreContext)
         {
             _authorizeLogic = authorizeLogic;
+            _offreContext = offreContext;
         }
 
         public async Task<AuthorizeModel> TryAuthorizeUser(string login, string password)
@@ -27,24 +29,21 @@ namespace Offre.Services.Services.Authorize
 
                 //query db for user
 
-                using (var db = new OffreContext())
+                var user = await _offreContext.Users.SingleOrDefaultAsync(x => x.Email.Equals(login) && x.Password.Equals(password));
+
+                if (user != null)
                 {
-                    var user = await db.Users.SingleOrDefaultAsync(x => x.Email.Equals(login) && x.Password.Equals(password));
+                    //generate JWT token
+                    var token = _authorizeLogic.GenerateToken(user.Id);
 
-                    if (user != null)
+                    return new AuthorizeModel
                     {
-                        //generate JWT token
-                        var token = _authorizeLogic.GenerateToken(user.Id);
-
-                        return new AuthorizeModel
-                        {
-                            Id = user.Id,
-                            Email = user.Email,
-                            Token = token
-                        };
-                    }
-
+                        Id = user.Id,
+                        Email = user.Email,
+                        Token = token
+                    };
                 }
+
             }
 
             return null;

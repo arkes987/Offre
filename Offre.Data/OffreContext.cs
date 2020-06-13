@@ -3,15 +3,16 @@ using Offre.Data.Models.User;
 
 namespace Offre.Data
 {
-    public class OffreContext : DbContext
+    public interface IOffreContext
     {
-        public DbSet<User> Users { get; set; }
-
-        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+        DbSet<User> Users { get; set; }
+    }
+    public class OffreContext : DbContext, IOffreContext
+    {
+        public OffreContext(DbContextOptions<OffreContext> options) : base(options)
         {
-            //Server=localhost;Database=master;Trusted_Connection=True;
-            optionsBuilder.UseSqlServer(
-                @"Server=localhost;Database=Offre;Trusted_Connection=True;");
+
         }
+        public DbSet<User> Users { get; set; }
     }
 }

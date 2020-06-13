@@ -1,10 +1,10 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 
-namespace Offre.Controllers.Controllers.UserAccount
+namespace Offre.Controllers.Controllers.User
 {
     [ApiController]
-    [Route("[controller]")]
-    public class UserAccount : ControllerBase
+    [Route("user")]
+    public class User : ControllerBase
     {
         [HttpGet]
         public object Get()

@@ -1,10 +1,12 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.OpenApi.Models;
+using Offre.Data;
 using Offre.Logic.Authorize;
 using Offre.Logic.Interfaces.Authorize;
 using Offre.Services.Interfaces.Authorize;
@@ -26,10 +28,10 @@ namespace Offre
         {
             services.AddControllers();
 
-            services.AddScoped(typeof(IAuthorizeService), typeof(AuthorizeService));
-            services.AddScoped(typeof(IAuthorizeLogic), typeof(AuthorizeLogic));
-
-
+            services.AddScoped<IAuthorizeService, AuthorizeService>();
+            services.AddScoped<IAuthorizeLogic, AuthorizeLogic>();
+            services.AddEntityFrameworkSqlServer().AddDbContext<OffreContext>(options => options.UseSqlServer(Configuration["AppSettings:ConnectionString"]));
+            services.AddScoped<IOffreContext, OffreContext>();
             services.AddSwaggerGen(c =>
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "Offre", Version = "v1" });

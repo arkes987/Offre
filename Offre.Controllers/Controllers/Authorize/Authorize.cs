@@ -8,7 +8,6 @@ using Microsoft.AspNetCore.Authorization;
 
 namespace Offre.Controllers.Controllers.Authorize
 {
-
     [ApiController]
     [Route("authorize")]
     public class Authorize : ControllerBase

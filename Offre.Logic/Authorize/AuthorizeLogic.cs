@@ -21,8 +21,7 @@ namespace Offre.Logic.Authorize
             var tokenHandler = new JwtSecurityTokenHandler();
 
             var key = Encoding.ASCII.GetBytes(_configuration.GetValue<string>("AppSettings:Secret"));
-
-            var tokenExpiryTime = Convert.ToInt32(_configuration.GetValue<string>("AppSettings:TokenExpiryTime"));
+            var tokenExpiryTime = _configuration.GetValue<int>("AppSettings:TokenExpiryTime");
 
             var tokenDescriptor = new SecurityTokenDescriptor
             {

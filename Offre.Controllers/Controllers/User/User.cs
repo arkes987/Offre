@@ -1,17 +1,17 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
-namespace Offre.Controllers.Controllers.Offer
+namespace Offre.Controllers.Controllers.User
 {
     [Authorize]
     [ApiController]
-    [Route("offer")]
-    public class Offer : ControllerBase
+    [Route("user")]
+    public class User : ControllerBase
     {
         [HttpGet]
         public object Get()
         {
-            return Ok("Offer ok");
+            return Ok("User ok");
         }
     }
 }

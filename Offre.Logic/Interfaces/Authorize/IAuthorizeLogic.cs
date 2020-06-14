@@ -2,6 +2,6 @@
 {
     public interface IAuthorizeLogic
     {
-        string GenerateToken();
+        string GenerateToken(long userId);
     }
 }

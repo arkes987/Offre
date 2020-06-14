@@ -1,19 +1,25 @@
-﻿using Offre.Data.Models.Authorize;
+﻿using Offre.Data;
+using Offre.Data.Models.Authorize;
 using Offre.Logic.Interfaces.Authorize;
 using Offre.Services.Interfaces.Authorize;
 using Offre.Validation.AuthorizePrefilters;
+using System.Linq;
+using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore;
 
 namespace Offre.Services.Services.Authorize
 {
     public class AuthorizeService : IAuthorizeService
     {
         private readonly IAuthorizeLogic _authorizeLogic;
-        public AuthorizeService(IAuthorizeLogic authorizeLogic)
+        private readonly IOffreContext _offreContext;
+        public AuthorizeService(IAuthorizeLogic authorizeLogic, IOffreContext offreContext)
         {
             _authorizeLogic = authorizeLogic;
+            _offreContext = offreContext;
         }
 
-        public AuthorizeModel TryAuthorizeUser(string login, string password)
+        public async Task<AuthorizeModel> TryAuthorizeUser(string login, string password)
         {
             var loginPrefilterResult = new PrefilterLogin(login).MatchPrefilter();
             var passwordPrefilterResult = new PrefilterPassword(password).MatchPrefilter();
@@ -23,17 +29,24 @@ namespace Offre.Services.Services.Authorize
 
                 //query db for user
 
-                //generate JWT token
-                var token = _authorizeLogic.GenerateToken();
+                var user = await _offreContext.Users.SingleOrDefaultAsync(x => x.Email.Equals(login) && x.Password.Equals(password));
 
-                return new AuthorizeModel
+                if (user != null)
                 {
-                    Secret = token
-                };
+                    //generate JWT token
+                    var token = _authorizeLogic.GenerateToken(user.Id);
+
+                    return new AuthorizeModel
+                    {
+                        Id = user.Id,
+                        Email = user.Email,
+                        Token = token
+                    };
+                }
+
             }
 
-
-            return new AuthorizeModel();
+            return null;
         }
     }
 }

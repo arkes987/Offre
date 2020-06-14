@@ -4,7 +4,6 @@ using Microsoft.AspNetCore.Mvc;
 using Offre.Controllers.Dto.Authorize;
 using Offre.Data.Models.Authorize;
 using Offre.Services.Interfaces.Authorize;
-using Microsoft.AspNetCore.Authorization;
 
 namespace Offre.Controllers.Controllers.Authorize
 {

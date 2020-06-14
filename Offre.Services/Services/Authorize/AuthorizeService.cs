@@ -3,7 +3,6 @@ using Offre.Data.Models.Authorize;
 using Offre.Logic.Interfaces.Authorize;
 using Offre.Services.Interfaces.Authorize;
 using Offre.Validation.AuthorizePrefilters;
-using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 

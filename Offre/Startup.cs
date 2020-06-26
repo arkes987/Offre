@@ -25,12 +25,10 @@ namespace Offre
         }
 
         public IConfiguration Configuration { get; }
-
-        // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddControllers();
-
+            services.AddHealthChecks();
             services.AddScoped<IAuthorizeService, AuthorizeService>();
             services.AddScoped<IAuthorizeLogic, AuthorizeLogic>();
             services.AddEntityFrameworkSqlServer().AddDbContext<OffreContext>(options => options.UseSqlServer(Configuration["AppSettings:ConnectionString"]));
@@ -70,9 +68,6 @@ namespace Offre
                 });
             });
 
-
-
-
             var key = Encoding.ASCII.GetBytes(Configuration["AppSettings:Secret"]);
 
             services.AddAuthentication(x =>
@@ -95,7 +90,6 @@ namespace Offre
 
         }
 
-        // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
             if (env.IsDevelopment())
@@ -121,6 +115,7 @@ namespace Offre
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();
+                endpoints.MapHealthChecks("/health");
             });
         }
     }

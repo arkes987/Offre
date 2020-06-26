@@ -32,7 +32,7 @@ namespace Offre.Test.Authorization
 
             configurationMock.Setup(mock => mock.GetSection("AppSettings:TokenExpiryTime")).Returns(() => configurationSectionMockExpiryTime.Object);
 
-            var subject = new AuthorizeLogic(configurationMock.Object);
+            var subject = new AuthorizeLogic(configurationMock.Object, null);
 
             var token = subject.GenerateToken(userId);
 

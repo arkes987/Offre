@@ -3,7 +3,7 @@ using System.Text.Json.Serialization;
 
 namespace Offre.Data.Models.User
 {
-    public class User
+    public class UserModel
     {
         [Key]
         public long Id { get; set; }

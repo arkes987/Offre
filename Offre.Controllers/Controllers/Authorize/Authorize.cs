@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Offre.Controllers.Dto.Authorize;
 using Offre.Data.Models.Authorize;
-using Offre.Services.Interfaces.Authorize;
+using Offre.Logic.Interfaces.Authorize;
 
 namespace Offre.Controllers.Controllers.Authorize
 {
@@ -11,10 +11,11 @@ namespace Offre.Controllers.Controllers.Authorize
     [Route("authorize")]
     public class Authorize : ControllerBase
     {
-        private readonly IAuthorizeService _authorizeService;
-        public Authorize(IAuthorizeService authorizeService)
+        private readonly IAuthorizeLogic _authorizeLogic;
+
+        public Authorize(IAuthorizeLogic authorizeLogic)
         {
-            _authorizeService = authorizeService;
+            _authorizeLogic = authorizeLogic;
         }
 
         [HttpPost]
@@ -22,7 +23,7 @@ namespace Offre.Controllers.Controllers.Authorize
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<IActionResult> AuthorizeUser(string login, string password)
         {
-            var user = await _authorizeService.TryAuthorizeUser(login, password);
+            var user = await _authorizeLogic.TryAuthorizeUser(login, password);
 
             if (user == null)
             {

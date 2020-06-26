@@ -2,9 +2,14 @@
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
+using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
+using Offre.Data;
+using Offre.Data.Models.Authorize;
 using Offre.Logic.Interfaces.Authorize;
+using Offre.Validation.AuthorizePrefilters;
 
 
 namespace Offre.Logic.Authorize
@@ -12,9 +17,37 @@ namespace Offre.Logic.Authorize
     public class AuthorizeLogic : IAuthorizeLogic
     {
         private readonly IConfiguration _configuration;
-        public AuthorizeLogic(IConfiguration configuration)
+        private readonly IOffreContext _offreContext;
+        public AuthorizeLogic(IConfiguration configuration, IOffreContext offreContext)
         {
             _configuration = configuration;
+            _offreContext = offreContext;
+        }
+
+        public async Task<AuthorizeModel> TryAuthorizeUser(string login, string password)
+        {
+            var loginPrefilterResult = new PrefilterLogin(login).MatchPrefilter();
+            var passwordPrefilterResult = new PrefilterPassword(password).MatchPrefilter();
+
+            if (loginPrefilterResult && passwordPrefilterResult)
+            {
+
+                var user = await _offreContext.Users.SingleOrDefaultAsync(x => x.Email.Equals(login) && x.Password.Equals(password));
+
+                if (user != null)
+                {
+                    var token = GenerateToken(user.Id);
+
+                    return new AuthorizeModel
+                    {
+                        Id = user.Id,
+                        Email = user.Email,
+                        Token = token
+                    };
+                }
+            }
+
+            return null;
         }
         public string GenerateToken(long userId)
         {

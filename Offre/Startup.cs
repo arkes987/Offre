@@ -12,8 +12,8 @@ using Microsoft.OpenApi.Models;
 using Offre.Data;
 using Offre.Logic.Authorize;
 using Offre.Logic.Interfaces.Authorize;
-using Offre.Services.Interfaces.Authorize;
-using Offre.Services.Services.Authorize;
+using Offre.Logic.Interfaces.UserLogic;
+using Offre.Logic.UserLogic;
 
 namespace Offre
 {
@@ -29,8 +29,7 @@ namespace Offre
         {
             services.AddControllers();
             services.AddHealthChecks();
-            services.AddScoped<IAuthorizeService, AuthorizeService>();
-            services.AddScoped<IAuthorizeLogic, AuthorizeLogic>();
+            ConfigureOwnLogic(services);
             services.AddEntityFrameworkSqlServer().AddDbContext<OffreContext>(options => options.UseSqlServer(Configuration["AppSettings:ConnectionString"]));
             services.AddScoped<IOffreContext, OffreContext>();
             services.AddSwaggerGen(c =>
@@ -88,6 +87,12 @@ namespace Offre
                     };
                 });
 
+        }
+
+        private void ConfigureOwnLogic(IServiceCollection services)
+        {
+            services.AddScoped<IAuthorizeLogic, AuthorizeLogic>();
+            services.AddScoped<IUserLogic, UserLogic>();
         }
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)

@@ -2,52 +2,74 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Offre.Controllers.Dto.User;
-using Offre.Data.Models.User;
 using Offre.Logic.Interfaces.UserLogic;
+using System.Linq;
+using Offre.Controllers.Mappings;
 
 namespace Offre.Controllers.Controllers.User
 {
     [Authorize]
     [ApiController]
-    [Route("user")]
+    [Route("users")]
     public class User : ControllerBase
     {
         private readonly IUserLogic _userLogic;
-        public User(IUserLogic userLogic)
+        private readonly IUserMapping _userMapping;
+        public User(IUserLogic userLogic, IUserMapping userMapping)
         {
             _userLogic = userLogic;
+            _userMapping = userMapping;
+        }
+
+        [ProducesResponseType(200)]
+        [ProducesResponseType(404)]
+        [HttpGet("{id}")]
+        public async Task<ActionResult<UserResponseDto>> GetUserById(long id)
+        {
+            var user = await _userLogic.GetById(id);
+
+            if (user == null)
+                return null;
+
+            return Ok(_userMapping.ToUserResponseDto(user));
         }
 
         [ProducesResponseType(200)]
         [ProducesResponseType(404)]
         [HttpGet]
-        public async Task<UserResponseDto> GetUserById(long id)
+        public async Task<ActionResult<UserResponseDto>> GetAllUsers()
         {
-            var user = await _userLogic.GetById(id);
+            var users = await _userLogic.GetAllUsers();
 
-            if (user == null)
-            {
-                return null;
-            }
-
-            return ToUserResponseDto(user);
+            return Ok(users?.Select(_userMapping.ToUserResponseDto).ToArray());
         }
 
         [ProducesResponseType(200)]
         [ProducesResponseType(404)]
         [HttpPost]
-        public async void Post()
+        public async Task<ActionResult<UserResponseDto>> AddUser(UserDto user)
         {
+            var userAdded = await _userLogic.AddUser(_userMapping.ToUserModel(user));
 
+            return Ok(userAdded);
         }
 
-        private UserResponseDto ToUserResponseDto(UserModel user)
+        [ProducesResponseType(200)]
+        [ProducesResponseType(404)]
+        [HttpPut("{id}")]
+        public async Task<ActionResult<UserResponseDto>> UpdateUser(UserDto user)
         {
-            return new UserResponseDto
-            {
-                Id = user.Id,
-                Email = user.Email
-            };
+            var updatedUser = await _userLogic.UpdateUser(_userMapping.ToUserModel(user));
+
+            return Ok(_userMapping.ToUserResponseDto(updatedUser));
+        }
+
+        [ProducesResponseType(200)]
+        [ProducesResponseType(404)]
+        [HttpDelete("{id}")]
+        public void DeleteUser(long id)
+        {
+            _userLogic.SoftDeleteUser(id);
         }
     }
 }

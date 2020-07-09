@@ -9,6 +9,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
+using Offre.Controllers.Mappings;
 using Offre.Data;
 using Offre.Logic.Authorize;
 using Offre.Logic.Interfaces.Authorize;
@@ -93,6 +94,7 @@ namespace Offre
         {
             services.AddScoped<IAuthorizeLogic, AuthorizeLogic>();
             services.AddScoped<IUserLogic, UserLogic>();
+            services.AddScoped<IUserMapping, UserMapping>();
         }
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)

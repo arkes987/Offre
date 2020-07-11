@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using Offre.Data;
@@ -24,35 +23,36 @@ namespace Offre.Logic.UserLogic
 
         public async Task<UserModel> GetById(long id)
         {
-            var user = await _offreContext.Users.FirstOrDefaultAsync();
+            var user = await _offreContext.Users.FirstOrDefaultAsync(x => x.Id == id);
 
-            if (user != null)
-            {
-                return user;
-            }
-
-            throw new Exception();
+            return user;
         }
 
-        public void SoftDeleteUser(long id)
+        public async Task<UserModel> SoftDeleteUser(long id)
         {
-            var user = _offreContext.Users.FirstOrDefault(x => x.Id == id);
+            var user = await _offreContext.Users.FirstOrDefaultAsync(x => x.Id == id);
 
             if (user != null)
             {
                 user.Status = (int)UserStatusEnum.DELETED;
                 user.ModifyDate = DateTime.Now;
+                _offreContext.Users.Update(user);
                 _offreContext.SaveChanges();
+
+                return user;
             }
-            else
-            {
-                throw new Exception();
-            }
+
+            return null;
         }
 
-        public UserModel UpdateUser(UserModel user)
+        public async Task<UserModel> UpdateUser(UserModel user)
         {
-            //here we need to check if user exsists
+            var existingUser = await _offreContext.Users.FirstOrDefaultAsync(x => x.Id == user.Id);
+
+            if (existingUser == null)
+            {
+                return null;
+            }
 
             _offreContext.Users.Update(user);
 

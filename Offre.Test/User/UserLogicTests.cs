@@ -1,6 +1,9 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using MockQueryable.Moq;
 using Moq;
 using Offre.Data;
 using Offre.Data.Enums;
@@ -12,7 +15,6 @@ namespace Offre.Test.User
     [TestClass]
     public class UserLogicTests
     {
-        private readonly Mock<DbSet<UserModel>> _userSetMock = new Mock<DbSet<UserModel>>();
         private readonly Mock<IOffreContext> _offreContextMock = new Mock<IOffreContext>();
 
         private UserLogic GetTestSubject()
@@ -20,69 +22,187 @@ namespace Offre.Test.User
             return new UserLogic(_offreContextMock.Object);
         }
 
-        //[TestMethod]
-        //public void GetAllUsers()
-        //{
-        //    var userLogic = GetTestSubject();
-
-
-        //    _userSetMock.Object.Add(new UserModel
-        //    {
-        //        Id = 12
-        //    });
-
-        //    _userSetMock.Object.Add(new UserModel
-        //    {
-        //        Id = 14
-        //    });
-
-        //    _offreContextMock.Setup(mock => mock.Users).Returns(_userSetMock.Object);
-
-        //    var users = userLogic.GetAllUsers().Result;
-
-        //    Assert.IsTrue(users.Length == 2);
-        //}
-
-        //[TestMethod]
-        //public void GetById()
-        //{
-        //    var userLogic = GetTestSubject();
-        //}
-
-        //[TestMethod]
-        //public void SoftDeleteUser()
-        //{
-        //    var userLogic = GetTestSubject();
-        //}
-
         [TestMethod]
-        public void UpdateUser()
+        public void GetAllUsers_GetAllUsersFromTable_ReturnsValidUserCount()
         {
-            _offreContextMock.Setup(mock => mock.Users).Returns(_userSetMock.Object);
-
             var userLogic = GetTestSubject();
 
-            var userModel = new UserModel
+            var userList = new List<UserModel>
             {
-                Id = 14,
-                Email = "test@offre.pl",
-                Status = (int)UserStatusEnum.ACTIVE,
-                Password = "QWERTYU",
-                SaveDate = DateTime.Now,
-                ModifyDate = DateTime.Now
+                new UserModel
+                {
+                    Id = 12
+                },
+                new UserModel
+                {
+                    Id = 13
+                }
             };
 
-            userLogic.UpdateUser(userModel);
+            var usersMock = userList.AsQueryable().BuildMockDbSet();
 
-            _userSetMock.Verify(mock => mock.Update(It.IsAny<UserModel>()), Times.Once);
+            _offreContextMock.Setup(mock => mock.Users).Returns(usersMock.Object);
+
+            var users = userLogic.GetAllUsers().Result;
+
+            Assert.IsTrue(users.Length == 2);
+        }
+
+        [TestMethod]
+        public void GetById_GetsUserById_ReturnsValidModel()
+        {
+            var userLogic = GetTestSubject();
+
+            var userList = new List<UserModel>
+            {
+                new UserModel
+                {
+                    Id = 12
+                },
+                new UserModel
+                {
+                    Id = 13
+                }
+            };
+
+            var usersMock = userList.AsQueryable().BuildMockDbSet();
+
+            _offreContextMock.Setup(mock => mock.Users).Returns(usersMock.Object);
+
+            var user = userLogic.GetById(13).Result;
+
+            Assert.IsTrue(user.Id == 13);
+        }
+
+        [TestMethod]
+        public void SoftDeleteUser_DeletesUserFromSet()
+        {
+            var userLogic = GetTestSubject();
+
+            var userList = new List<UserModel>
+            {
+                new UserModel
+                {
+                    Id = 12,
+                    Status = (int)UserStatusEnum.ACTIVE
+                },
+                new UserModel
+                {
+                    Id = 13
+                }
+            };
+
+            var usersMock = userList.AsQueryable().BuildMockDbSet();
+
+            _offreContextMock.Setup(mock => mock.Users).Returns(usersMock.Object);
+
+            var modelToDelete = userList.First();
+
+            var updateResult = userLogic.SoftDeleteUser(modelToDelete.Id).Result;
+
+            Assert.IsNotNull(updateResult);
+            Assert.IsTrue(updateResult.Status == (int)UserStatusEnum.DELETED);
+        }
+
+        [TestMethod]
+        public void SoftDeleteUser_CallsUpdateAndSavesContext()
+        {
+            var userLogic = GetTestSubject();
+
+            var userList = new List<UserModel>
+            {
+                new UserModel
+                {
+                    Id = 12,
+                    Status = (int)UserStatusEnum.ACTIVE
+                },
+                new UserModel
+                {
+                    Id = 13
+                }
+            };
+
+            var usersMock = userList.AsQueryable().BuildMockDbSet();
+
+            _offreContextMock.Setup(mock => mock.Users).Returns(usersMock.Object);
+
+            var modelToDelete = userList.First();
+
+            userLogic.SoftDeleteUser(modelToDelete.Id).Wait();
+
+            usersMock.Verify(mock => mock.Update(It.IsAny<UserModel>()), Times.Once);
             _offreContextMock.Verify(mock => mock.SaveChanges(), Times.Once);
         }
 
         [TestMethod]
-        public void AddUser_SaveUser()
+        public void UpdateUser_CallsUpdateAndSavesContext()
         {
-            _offreContextMock.Setup(mock => mock.Users).Returns(_userSetMock.Object);
-            
+
+            var userLogic = GetTestSubject();
+
+            var userList = new List<UserModel>
+            {
+                new UserModel
+                {
+                    Id = 12,
+                    Status = (int)UserStatusEnum.ACTIVE
+                },
+                new UserModel
+                {
+                    Id = 13
+                }
+            };
+
+            var usersMock = userList.AsQueryable().BuildMockDbSet();
+
+            _offreContextMock.Setup(mock => mock.Users).Returns(usersMock.Object);
+
+            var modelToUpdate = userList.First();
+
+            userLogic.UpdateUser(modelToUpdate).Wait();
+
+            usersMock.Verify(mock => mock.Update(It.IsAny<UserModel>()), Times.Once);
+            _offreContextMock.Verify(mock => mock.SaveChanges(), Times.Once);
+        }
+
+        [TestMethod]
+        public void UpdateUser_UpdatesUser_ReturnsValidModel()
+        {
+            var userLogic = GetTestSubject();
+
+            var userList = new List<UserModel>
+            {
+                new UserModel
+                {
+                    Id = 12,
+                    Status = (int)UserStatusEnum.ACTIVE
+                },
+                new UserModel
+                {
+                    Id = 13
+                }
+            };
+
+            var usersMock = userList.AsQueryable().BuildMockDbSet();
+
+            _offreContextMock.Setup(mock => mock.Users).Returns(usersMock.Object);
+
+            var modelToUpdate = userList.First();
+
+            modelToUpdate.Email = "test@offre.pl";
+
+            var updateResult = userLogic.UpdateUser(modelToUpdate).Result;
+
+            Assert.IsNotNull(updateResult);
+            Assert.IsTrue(updateResult.Email.Equals("test@offre.pl"));
+        }
+
+        [TestMethod]
+        public void AddUser_AddsUserAndSaveContext()
+        {
+            Mock<DbSet<UserModel>> userSetMock = new Mock<DbSet<UserModel>>();
+            _offreContextMock.Setup(mock => mock.Users).Returns(userSetMock.Object);
+
             var userLogic = GetTestSubject();
 
             var userModel = new UserModel
@@ -97,9 +217,8 @@ namespace Offre.Test.User
 
             userLogic.AddUser(userModel);
 
-            _userSetMock.Verify(mock => mock.Add(It.IsAny<UserModel>()), Times.Once);
+            userSetMock.Verify(mock => mock.Add(It.IsAny<UserModel>()), Times.Once);
             _offreContextMock.Verify(mock => mock.SaveChanges(), Times.Once);
-
         }
     }
 }

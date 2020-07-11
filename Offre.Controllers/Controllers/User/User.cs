@@ -57,11 +57,11 @@ namespace Offre.Controllers.Controllers.User
         [ProducesResponseType(200)]
         [ProducesResponseType(404)]
         [HttpPut("{id}")]
-        public ActionResult<UserResponseDto> UpdateUser(UserDto user)
+        public async Task<ActionResult<UserResponseDto>> UpdateUser(UserDto user)
         {
-            var updatedUser = _userLogic.UpdateUser(_userMapping.ToUserModel(user));
+            var updatedUser = await _userLogic.UpdateUser(_userMapping.ToUserModel(user));
 
-            if (updatedUser.Id == 0)
+            if (updatedUser == null)
                 return NotFound();
 
             return Ok(_userMapping.ToUserResponseDto(updatedUser));
@@ -70,9 +70,14 @@ namespace Offre.Controllers.Controllers.User
         [ProducesResponseType(200)]
         [ProducesResponseType(404)]
         [HttpDelete("{id}")]
-        public void DeleteUser(long id)
+        public async Task<ActionResult<UserResponseDto>> DeleteUser(long id)
         {
-            _userLogic.SoftDeleteUser(id);
+            var user = await _userLogic.SoftDeleteUser(id);
+
+            if (user == null)
+                return NotFound();
+
+            return Ok(user);
         }
     }
 }

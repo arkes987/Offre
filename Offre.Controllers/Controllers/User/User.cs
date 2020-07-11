@@ -29,7 +29,7 @@ namespace Offre.Controllers.Controllers.User
             var user = await _userLogic.GetById(id);
 
             if (user == null)
-                return null;
+                return NotFound();
 
             return Ok(_userMapping.ToUserResponseDto(user));
         }
@@ -47,9 +47,9 @@ namespace Offre.Controllers.Controllers.User
         [ProducesResponseType(200)]
         [ProducesResponseType(404)]
         [HttpPost]
-        public async Task<ActionResult<UserResponseDto>> AddUser(UserDto user)
+        public ActionResult<UserResponseDto> AddUser(UserDto user)
         {
-            var userAdded = await _userLogic.AddUser(_userMapping.ToUserModel(user));
+            var userAdded = _userLogic.AddUser(_userMapping.ToUserModel(user));
 
             return Ok(userAdded);
         }
@@ -57,9 +57,12 @@ namespace Offre.Controllers.Controllers.User
         [ProducesResponseType(200)]
         [ProducesResponseType(404)]
         [HttpPut("{id}")]
-        public async Task<ActionResult<UserResponseDto>> UpdateUser(UserDto user)
+        public ActionResult<UserResponseDto> UpdateUser(UserDto user)
         {
-            var updatedUser = await _userLogic.UpdateUser(_userMapping.ToUserModel(user));
+            var updatedUser = _userLogic.UpdateUser(_userMapping.ToUserModel(user));
+
+            if (updatedUser.Id == 0)
+                return NotFound();
 
             return Ok(_userMapping.ToUserResponseDto(updatedUser));
         }

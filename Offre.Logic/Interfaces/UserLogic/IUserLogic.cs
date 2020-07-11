@@ -8,7 +8,7 @@ namespace Offre.Logic.Interfaces.UserLogic
         Task<UserModel[]> GetAllUsers();
         Task<UserModel> GetById(long id);
         void SoftDeleteUser(long id);
-        Task<UserModel> UpdateUser(UserModel user);
-        Task<UserModel> AddUser(UserModel user);
+        UserModel UpdateUser(UserModel user);
+        UserModel AddUser(UserModel user);
     }
 }

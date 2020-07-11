@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
@@ -25,7 +24,14 @@ namespace Offre.Logic.UserLogic
 
         public async Task<UserModel> GetById(long id)
         {
-            return await _offreContext.Users.FirstOrDefaultAsync(user => user.Id == id);
+            var user = await _offreContext.Users.FirstOrDefaultAsync();
+
+            if (user != null)
+            {
+                return user;
+            }
+
+            throw new Exception();
         }
 
         public void SoftDeleteUser(long id)
@@ -44,22 +50,24 @@ namespace Offre.Logic.UserLogic
             }
         }
 
-        public async Task<UserModel> UpdateUser(UserModel user)
+        public UserModel UpdateUser(UserModel user)
         {
-           // var user = await _offreContext.Users.Update(user);
+            //here we need to check if user exsists
 
-            throw new NotImplementedException();
+            _offreContext.Users.Update(user);
+
+            _offreContext.SaveChanges();
+
+            return user;
         }
 
-        public async Task<UserModel> AddUser(UserModel user)
+        public UserModel AddUser(UserModel user)
         {
-            //var addedUser = await _offreContext.Users.AddAsync(user);
-            
-            //_offreContext.SaveChanges();
+            _offreContext.Users.Add(user);
 
-            //return addedUser;
+            _offreContext.SaveChanges();
 
-            throw new NotImplementedException();
+            return user;
         }
     }
 }

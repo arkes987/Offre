@@ -16,7 +16,8 @@ namespace Offre.Controllers.Mappings
             return new UserResponseDto
             {
                 Id = user.Id,
-                Email = user.Email
+                Email = user.Email,
+                Status = user.Status
             };
         }
 

@@ -94,7 +94,7 @@ namespace Offre
         {
             services.AddScoped<IAuthorizeLogic, AuthorizeLogic>();
             services.AddScoped<IUserLogic, UserLogic>();
-            services.AddScoped<IUserMapping, UserMapping>();
+            services.AddSingleton<IUserMapping, UserMapping>();
         }
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)

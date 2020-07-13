@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using MockQueryable.Moq;
@@ -23,7 +24,7 @@ namespace Offre.Test.User
         }
 
         [TestMethod]
-        public void GetAllUsers_GetAllUsersFromTable_ReturnsValidUserCount()
+        public async Task GetAllUsers_GetAllUsersFromTable_ReturnsValidUserCount()
         {
             var userLogic = GetTestSubject();
 
@@ -31,11 +32,11 @@ namespace Offre.Test.User
             {
                 new UserModel
                 {
-                    Id = 12
+                    Id = 0
                 },
                 new UserModel
                 {
-                    Id = 13
+                    Id = 1
                 }
             };
 
@@ -43,13 +44,13 @@ namespace Offre.Test.User
 
             _offreContextMock.Setup(mock => mock.Users).Returns(usersMock.Object);
 
-            var users = userLogic.GetAllUsers().Result;
+            var users = await userLogic.GetAllUsers();
 
             Assert.IsTrue(users.Length == 2);
         }
 
         [TestMethod]
-        public void GetById_GetsUserById_ReturnsValidModel()
+        public async Task GetById_GetsUserById_ReturnsValidModel()
         {
             var userLogic = GetTestSubject();
 
@@ -57,11 +58,11 @@ namespace Offre.Test.User
             {
                 new UserModel
                 {
-                    Id = 12
+                    Id = 0
                 },
                 new UserModel
                 {
-                    Id = 13
+                    Id = 1
                 }
             };
 
@@ -69,13 +70,13 @@ namespace Offre.Test.User
 
             _offreContextMock.Setup(mock => mock.Users).Returns(usersMock.Object);
 
-            var user = userLogic.GetById(13).Result;
+            var user = await userLogic.GetById(0);
 
-            Assert.IsTrue(user.Id == 13);
+            Assert.IsTrue(user.Id == 0);
         }
 
         [TestMethod]
-        public void SoftDeleteUser_DeletesUserFromSet()
+        public async Task SoftDeleteUser_DeletesUserFromSet()
         {
             var userLogic = GetTestSubject();
 
@@ -83,12 +84,12 @@ namespace Offre.Test.User
             {
                 new UserModel
                 {
-                    Id = 12,
+                    Id = 0,
                     Status = (int)UserStatusEnum.ACTIVE
                 },
                 new UserModel
                 {
-                    Id = 13
+                    Id = 1
                 }
             };
 
@@ -98,14 +99,14 @@ namespace Offre.Test.User
 
             var modelToDelete = userList.First();
 
-            var updateResult = userLogic.SoftDeleteUser(modelToDelete.Id).Result;
+            var updateResult = await userLogic.SoftDeleteUser(modelToDelete.Id);
 
             Assert.IsNotNull(updateResult);
             Assert.IsTrue(updateResult.Status == (int)UserStatusEnum.DELETED);
         }
 
         [TestMethod]
-        public void SoftDeleteUser_CallsUpdateAndSavesContext()
+        public async Task SoftDeleteUser_CallsUpdateAndSavesContext()
         {
             var userLogic = GetTestSubject();
 
@@ -113,12 +114,12 @@ namespace Offre.Test.User
             {
                 new UserModel
                 {
-                    Id = 12,
+                    Id = 0,
                     Status = (int)UserStatusEnum.ACTIVE
                 },
                 new UserModel
                 {
-                    Id = 13
+                    Id = 1
                 }
             };
 
@@ -128,14 +129,14 @@ namespace Offre.Test.User
 
             var modelToDelete = userList.First();
 
-            userLogic.SoftDeleteUser(modelToDelete.Id).Wait();
+            await userLogic.SoftDeleteUser(modelToDelete.Id);
 
             usersMock.Verify(mock => mock.Update(It.IsAny<UserModel>()), Times.Once);
             _offreContextMock.Verify(mock => mock.SaveChanges(), Times.Once);
         }
 
         [TestMethod]
-        public void UpdateUser_CallsUpdateAndSavesContext()
+        public async Task UpdateUser_CallsUpdateAndSavesContext()
         {
 
             var userLogic = GetTestSubject();
@@ -144,12 +145,12 @@ namespace Offre.Test.User
             {
                 new UserModel
                 {
-                    Id = 12,
+                    Id = 0,
                     Status = (int)UserStatusEnum.ACTIVE
                 },
                 new UserModel
                 {
-                    Id = 13
+                    Id = 1
                 }
             };
 
@@ -159,14 +160,14 @@ namespace Offre.Test.User
 
             var modelToUpdate = userList.First();
 
-            userLogic.UpdateUser(modelToUpdate).Wait();
+            await userLogic.UpdateUser(modelToUpdate);
 
             usersMock.Verify(mock => mock.Update(It.IsAny<UserModel>()), Times.Once);
             _offreContextMock.Verify(mock => mock.SaveChanges(), Times.Once);
         }
 
         [TestMethod]
-        public void UpdateUser_UpdatesUser_ReturnsValidModel()
+        public async Task UpdateUser_UpdatesUser_ReturnsValidModel()
         {
             var userLogic = GetTestSubject();
 
@@ -174,12 +175,12 @@ namespace Offre.Test.User
             {
                 new UserModel
                 {
-                    Id = 12,
+                    Id = 0,
                     Status = (int)UserStatusEnum.ACTIVE
                 },
                 new UserModel
                 {
-                    Id = 13
+                    Id = 1
                 }
             };
 
@@ -191,7 +192,7 @@ namespace Offre.Test.User
 
             modelToUpdate.Email = "test@offre.pl";
 
-            var updateResult = userLogic.UpdateUser(modelToUpdate).Result;
+            var updateResult = await userLogic.UpdateUser(modelToUpdate);
 
             Assert.IsNotNull(updateResult);
             Assert.IsTrue(updateResult.Email.Equals("test@offre.pl"));
@@ -207,7 +208,7 @@ namespace Offre.Test.User
 
             var userModel = new UserModel
             {
-                Id = 14,
+                Id = 0,
                 Email = "test@offre.pl",
                 Status = (int)UserStatusEnum.ACTIVE,
                 Password = "QWERTYU",

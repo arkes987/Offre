@@ -5,7 +5,9 @@ namespace Offre.Data
 {
     public interface IOffreContext
     {
-        DbSet<User> Users { get; set; }
+        DbSet<UserModel> Users { get; set; }
+
+        void SaveChanges();
     }
     public class OffreContext : DbContext, IOffreContext
     {
@@ -13,6 +15,10 @@ namespace Offre.Data
         {
 
         }
-        public DbSet<User> Users { get; set; }
+        public DbSet<UserModel> Users { get; set; }
+        public new void SaveChanges()
+        {
+            base.SaveChanges();
+        }
     }
 }

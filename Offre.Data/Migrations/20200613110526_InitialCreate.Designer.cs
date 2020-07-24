@@ -20,7 +20,7 @@ namespace Offre.Data.Migrations
                 .HasAnnotation("Relational:MaxIdentifierLength", 128)
                 .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-            modelBuilder.Entity("Offre.Data.Models.UserModel.UserModel", b =>
+            modelBuilder.Entity("Offre.Data.Models.User.User", b =>
                 {
                     b.Property<long>("Id")
                         .ValueGeneratedOnAdd()

@@ -4,7 +4,7 @@ using System.Text.Json.Serialization;
 
 namespace Offre.Data.Models.User
 {
-    public class UserModel
+    public class User
     {
         [Key]
         public long Id { get; set; }

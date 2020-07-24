@@ -1,15 +1,14 @@
-﻿using System;
+﻿using Offre.Abstraction.Models;
 using Offre.Controllers.Dto.User;
-using Offre.Data.Models.User;
 
 namespace Offre.Controllers.Mappings
 {
-    public interface IUserMapping
+    public interface IUserDtoMapping
     {
         UserResponseDto ToUserResponseDto(UserModel user);
         UserModel ToUserModel(UserDto user);
     }
-    public class UserMapping : IUserMapping
+    public class UserDtoMapping : IUserDtoMapping
     {
         public UserResponseDto ToUserResponseDto(UserModel user)
         {

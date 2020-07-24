@@ -1,9 +1,9 @@
-﻿using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Offre.Controllers.Dto.Authorize;
 using Offre.Data.Models.Authorize;
 using Offre.Logic.Interfaces.Authorize;
+using System.Threading.Tasks;
 
 namespace Offre.Controllers.Controllers.Authorize
 {

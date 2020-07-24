@@ -1,15 +1,16 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using MockQueryable.Moq;
 using Moq;
 using Offre.Data;
 using Offre.Data.Enums;
-using Offre.Data.Models.User;
+using Offre.Data.Mappings.User;
 using Offre.Logic.UserLogic;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using Offre.Abstraction.Models;
 
 namespace Offre.Test.User
 {
@@ -17,10 +18,24 @@ namespace Offre.Test.User
     public class UserLogicTests
     {
         private readonly Mock<IOffreContext> _offreContextMock = new Mock<IOffreContext>();
+        private readonly Mock<IUserModelMapping> _userModelMappingMock = new Mock<IUserModelMapping>();
 
         private UserLogic GetTestSubject()
         {
-            return new UserLogic(_offreContextMock.Object);
+            return new UserLogic(_offreContextMock.Object, _userModelMappingMock.Object);
+        }
+
+        private void SetUserModelMapping()
+        {
+            _userModelMappingMock.Setup(mock => mock.ToUser(It.IsAny<UserModel>())).Returns(new Data.Models.User.User
+            {
+
+            });
+
+            _userModelMappingMock.Setup(mock => mock.ToUserModel(It.IsAny<Data.Models.User.User>())).Returns(new UserModel
+            {
+
+            });
         }
 
         [TestMethod]
@@ -28,13 +43,13 @@ namespace Offre.Test.User
         {
             var userLogic = GetTestSubject();
 
-            var userList = new List<UserModel>
+            var userList = new List<Data.Models.User.User>
             {
-                new UserModel
+                new Data.Models.User.User
                 {
                     Id = 0
                 },
-                new UserModel
+                new Data.Models.User.User
                 {
                     Id = 1
                 }
@@ -54,13 +69,13 @@ namespace Offre.Test.User
         {
             var userLogic = GetTestSubject();
 
-            var userList = new List<UserModel>
+            var userList = new List<Data.Models.User.User>
             {
-                new UserModel
+                new Data.Models.User.User
                 {
                     Id = 0
                 },
-                new UserModel
+                new Data.Models.User.User
                 {
                     Id = 1
                 }
@@ -80,14 +95,14 @@ namespace Offre.Test.User
         {
             var userLogic = GetTestSubject();
 
-            var userList = new List<UserModel>
+            var userList = new List<Data.Models.User.User>
             {
-                new UserModel
+                new Data.Models.User.User
                 {
                     Id = 0,
                     Status = (int)UserStatusEnum.ACTIVE
                 },
-                new UserModel
+                new Data.Models.User.User
                 {
                     Id = 1
                 }
@@ -110,14 +125,14 @@ namespace Offre.Test.User
         {
             var userLogic = GetTestSubject();
 
-            var userList = new List<UserModel>
+            var userList = new List<Data.Models.User.User>
             {
-                new UserModel
+                new Data.Models.User.User
                 {
                     Id = 0,
                     Status = (int)UserStatusEnum.ACTIVE
                 },
-                new UserModel
+                new Data.Models.User.User
                 {
                     Id = 1
                 }
@@ -131,24 +146,24 @@ namespace Offre.Test.User
 
             await userLogic.SoftDeleteUser(modelToDelete.Id);
 
-            usersMock.Verify(mock => mock.Update(It.IsAny<UserModel>()), Times.Once);
+            usersMock.Verify(mock => mock.Update(It.IsAny<Data.Models.User.User>()), Times.Once);
             _offreContextMock.Verify(mock => mock.SaveChanges(), Times.Once);
         }
 
         [TestMethod]
         public async Task UpdateUser_CallsUpdateAndSavesContext()
         {
-
+            SetUserModelMapping();
             var userLogic = GetTestSubject();
 
-            var userList = new List<UserModel>
+            var userList = new List<Data.Models.User.User>
             {
-                new UserModel
+                new Data.Models.User.User
                 {
                     Id = 0,
                     Status = (int)UserStatusEnum.ACTIVE
                 },
-                new UserModel
+                new Data.Models.User.User
                 {
                     Id = 1
                 }
@@ -160,25 +175,26 @@ namespace Offre.Test.User
 
             var modelToUpdate = userList.First();
 
-            await userLogic.UpdateUser(modelToUpdate);
+            await userLogic.UpdateUser(_userModelMappingMock.Object.ToUserModel(modelToUpdate));
 
-            usersMock.Verify(mock => mock.Update(It.IsAny<UserModel>()), Times.Once);
+            usersMock.Verify(mock => mock.Update(It.IsAny<Data.Models.User.User>()), Times.Once);
             _offreContextMock.Verify(mock => mock.SaveChanges(), Times.Once);
         }
 
         [TestMethod]
         public async Task UpdateUser_UpdatesUser_ReturnsValidModel()
         {
+            SetUserModelMapping();
             var userLogic = GetTestSubject();
 
-            var userList = new List<UserModel>
+            var userList = new List<Data.Models.User.User>
             {
-                new UserModel
+                new Data.Models.User.User
                 {
                     Id = 0,
                     Status = (int)UserStatusEnum.ACTIVE
                 },
-                new UserModel
+                new Data.Models.User.User
                 {
                     Id = 1
                 }
@@ -192,7 +208,7 @@ namespace Offre.Test.User
 
             modelToUpdate.Email = "test@offre.pl";
 
-            var updateResult = await userLogic.UpdateUser(modelToUpdate);
+            var updateResult = await userLogic.UpdateUser(_userModelMappingMock.Object.ToUserModel(modelToUpdate));
 
             Assert.IsNotNull(updateResult);
             Assert.IsTrue(updateResult.Email.Equals("test@offre.pl"));
@@ -201,12 +217,13 @@ namespace Offre.Test.User
         [TestMethod]
         public void AddUser_AddsUserAndSaveContext()
         {
-            Mock<DbSet<UserModel>> userSetMock = new Mock<DbSet<UserModel>>();
+            SetUserModelMapping();
+            Mock<DbSet<Data.Models.User.User>> userSetMock = new Mock<DbSet<Data.Models.User.User>>();
             _offreContextMock.Setup(mock => mock.Users).Returns(userSetMock.Object);
 
             var userLogic = GetTestSubject();
 
-            var userModel = new UserModel
+            var userModel = new Data.Models.User.User
             {
                 Id = 0,
                 Email = "test@offre.pl",
@@ -216,9 +233,9 @@ namespace Offre.Test.User
                 ModifyDate = DateTime.Now
             };
 
-            userLogic.AddUser(userModel);
+            userLogic.AddUser(_userModelMappingMock.Object.ToUserModel(userModel));
 
-            userSetMock.Verify(mock => mock.Add(It.IsAny<UserModel>()), Times.Once);
+            userSetMock.Verify(mock => mock.Add(It.IsAny<Data.Models.User.User>()), Times.Once);
             _offreContextMock.Verify(mock => mock.SaveChanges(), Times.Once);
         }
     }

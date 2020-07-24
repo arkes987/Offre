@@ -1,7 +1,7 @@
-﻿using System.Threading.Tasks;
-using Offre.Data.Models.User;
+﻿using Offre.Abstraction.Models;
+using System.Threading.Tasks;
 
-namespace Offre.Logic.Interfaces.UserLogic
+namespace Offre.Abstraction.Interfaces.Logic
 {
     public interface IUserLogic
     {

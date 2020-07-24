@@ -1,5 +1,5 @@
-﻿using System.Threading.Tasks;
-using Offre.Data.Models.Authorize;
+﻿using Offre.Data.Models.Authorize;
+using System.Threading.Tasks;
 
 namespace Offre.Logic.Interfaces.Authorize
 {

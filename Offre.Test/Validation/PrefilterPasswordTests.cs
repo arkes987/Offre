@@ -1,6 +1,6 @@
-﻿using System;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Offre.Validation.AuthorizePrefilters;
+using System;
 
 namespace Offre.Test.Validation
 {
@@ -79,7 +79,7 @@ namespace Offre.Test.Validation
                 {
                     Assert.IsTrue(ex.Message.Equals("Password does not match rules."));
                 }
-                
+
             }
         }
 

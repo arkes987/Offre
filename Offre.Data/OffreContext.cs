@@ -1,13 +1,18 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Storage;
 using Offre.Data.Models.User;
 
 namespace Offre.Data
 {
     public interface IOffreContext
     {
-        DbSet<UserModel> Users { get; set; }
+        DbSet<User> Users { get; set; }
 
         void SaveChanges();
+
+        public IDbContextTransaction BeginTransaction();
+
+
     }
     public class OffreContext : DbContext, IOffreContext
     {
@@ -15,10 +20,15 @@ namespace Offre.Data
         {
 
         }
-        public DbSet<UserModel> Users { get; set; }
+        public DbSet<User> Users { get; set; }
         public new void SaveChanges()
         {
             base.SaveChanges();
+        }
+
+        IDbContextTransaction IOffreContext.BeginTransaction()
+        {
+            return base.Database.BeginTransaction();
         }
     }
 }

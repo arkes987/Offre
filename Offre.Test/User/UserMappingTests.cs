@@ -1,18 +1,18 @@
-﻿using System;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Offre.Abstraction.Models;
 using Offre.Controllers.Dto.User;
 using Offre.Controllers.Mappings;
 using Offre.Data.Enums;
-using Offre.Data.Models.User;
+using System;
 
 namespace Offre.Test.User
 {
     [TestClass]
     public class UserMappingTests
     {
-        private UserMapping GetTestSubject()
+        private UserDtoMapping GetTestSubject()
         {
-            return new UserMapping();
+            return new UserDtoMapping();
         }
 
         [TestMethod]

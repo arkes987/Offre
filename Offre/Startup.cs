@@ -1,5 +1,3 @@
-using System.Collections.Generic;
-using System.Text;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -9,12 +7,15 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
+using Offre.Abstraction.Interfaces.Logic;
 using Offre.Controllers.Mappings;
 using Offre.Data;
+using Offre.Data.Mappings.User;
 using Offre.Logic.Authorize;
 using Offre.Logic.Interfaces.Authorize;
-using Offre.Logic.Interfaces.UserLogic;
 using Offre.Logic.UserLogic;
+using System.Collections.Generic;
+using System.Text;
 
 namespace Offre
 {
@@ -94,7 +95,8 @@ namespace Offre
         {
             services.AddScoped<IAuthorizeLogic, AuthorizeLogic>();
             services.AddScoped<IUserLogic, UserLogic>();
-            services.AddSingleton<IUserMapping, UserMapping>();
+            services.AddSingleton<IUserDtoMapping, UserDtoMapping>();
+            services.AddSingleton<IUserModelMapping, UserModelMapping>();
         }
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)

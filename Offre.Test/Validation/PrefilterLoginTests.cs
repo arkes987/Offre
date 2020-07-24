@@ -1,6 +1,6 @@
-﻿using System;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Offre.Validation.AuthorizePrefilters;
+using System;
 
 namespace Offre.Test.Validation
 {
@@ -84,7 +84,7 @@ namespace Offre.Test.Validation
         [TestMethod]
         public void PassesValidationWhenLoginIsValidEmail()
         {
-            string[] testData = {"arek1998@op.pl", "arkadiusz@gmail.com", "testoWyMail.test@interia.pl"};
+            string[] testData = { "arek1998@op.pl", "arkadiusz@gmail.com", "testoWyMail.test@interia.pl" };
 
             foreach (var email in testData)
             {

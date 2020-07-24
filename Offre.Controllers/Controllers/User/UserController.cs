@@ -1,21 +1,21 @@
-﻿using System.Threading.Tasks;
-using Microsoft.AspNetCore.Authorization;
+﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Offre.Abstraction.Interfaces.Logic;
 using Offre.Controllers.Dto.User;
-using Offre.Logic.Interfaces.UserLogic;
-using System.Linq;
 using Offre.Controllers.Mappings;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace Offre.Controllers.Controllers.User
 {
     [Authorize]
     [ApiController]
     [Route("users")]
-    public class User : ControllerBase
+    public class UserController : ControllerBase
     {
         private readonly IUserLogic _userLogic;
-        private readonly IUserMapping _userMapping;
-        public User(IUserLogic userLogic, IUserMapping userMapping)
+        private readonly IUserDtoMapping _userMapping;
+        public UserController(IUserLogic userLogic, IUserDtoMapping userMapping)
         {
             _userLogic = userLogic;
             _userMapping = userMapping;

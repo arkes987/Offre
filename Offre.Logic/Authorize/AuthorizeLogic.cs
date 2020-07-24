@@ -1,15 +1,15 @@
-﻿using System;
-using System.IdentityModel.Tokens.Jwt;
-using System.Security.Claims;
-using System.Text;
-using System.Threading.Tasks;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
 using Offre.Data;
 using Offre.Data.Models.Authorize;
 using Offre.Logic.Interfaces.Authorize;
 using Offre.Validation.AuthorizePrefilters;
+using System;
+using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
+using System.Text;
+using System.Threading.Tasks;
 
 
 namespace Offre.Logic.Authorize

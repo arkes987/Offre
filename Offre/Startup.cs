@@ -1,5 +1,3 @@
-using System.Collections.Generic;
-using System.Text;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -9,12 +7,14 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
-using Offre.Controllers.Mappings;
+using Offre.Abstraction.Mappings.User;
 using Offre.Data;
-using Offre.Logic.Authorize;
-using Offre.Logic.Interfaces.Authorize;
+using Offre.Logic.Authenticate;
+using Offre.Logic.Interfaces.Authenticate;
 using Offre.Logic.Interfaces.UserLogic;
 using Offre.Logic.UserLogic;
+using System.Collections.Generic;
+using System.Text;
 
 namespace Offre
 {
@@ -92,7 +92,7 @@ namespace Offre
 
         private void ConfigureOwnLogic(IServiceCollection services)
         {
-            services.AddScoped<IAuthorizeLogic, AuthorizeLogic>();
+            services.AddScoped<IAuthenticateLogic, AuthenticateLogic>();
             services.AddScoped<IUserLogic, UserLogic>();
             services.AddSingleton<IUserMapping, UserMapping>();
         }

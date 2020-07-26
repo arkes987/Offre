@@ -1,4 +1,4 @@
-﻿namespace Offre.Controllers.Dto.User
+﻿namespace Offre.Abstraction.Dto.User
 {
     public class UserResponseDto
     {

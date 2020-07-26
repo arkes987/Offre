@@ -15,6 +15,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Offre.Test", "Offre.Test\Of
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Offre.Validation", "Offre.Validation\Offre.Validation.csproj", "{3542C4F1-9B3A-4247-AE41-5518F98C3E57}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Offre.Abstraction", "Offre.Abstraction\Offre.Abstraction.csproj", "{4693F678-B145-4B43-866E-82B7F1484078}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -45,6 +47,10 @@ Global
 		{3542C4F1-9B3A-4247-AE41-5518F98C3E57}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{3542C4F1-9B3A-4247-AE41-5518F98C3E57}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{3542C4F1-9B3A-4247-AE41-5518F98C3E57}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4693F678-B145-4B43-866E-82B7F1484078}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4693F678-B145-4B43-866E-82B7F1484078}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4693F678-B145-4B43-866E-82B7F1484078}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4693F678-B145-4B43-866E-82B7F1484078}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -10,6 +10,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\Offre.Abstraction\Offre.Abstraction.csproj" />
     <ProjectReference Include="..\Offre.Data\Offre.Data.csproj" />
     <ProjectReference Include="..\Offre.Validation\Offre.Validation.csproj" />
   </ItemGroup>

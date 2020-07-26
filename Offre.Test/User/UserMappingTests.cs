@@ -1,9 +1,9 @@
-﻿using System;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Offre.Controllers.Dto.User;
-using Offre.Controllers.Mappings;
+﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Offre.Abstraction.Dto.User;
+using Offre.Abstraction.Mappings.User;
 using Offre.Data.Enums;
 using Offre.Data.Models.User;
+using System;
 
 namespace Offre.Test.User
 {

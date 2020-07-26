@@ -1,11 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Cryptography.Xml;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using MockQueryable.Moq;
 using Moq;
+using Offre.Abstraction.Dto.User;
+using Offre.Abstraction.Mappings.User;
 using Offre.Data;
 using Offre.Data.Enums;
 using Offre.Data.Models.User;
@@ -17,10 +20,15 @@ namespace Offre.Test.User
     public class UserLogicTests
     {
         private readonly Mock<IOffreContext> _offreContextMock = new Mock<IOffreContext>();
+        private readonly Mock<IUserMapping> _userMappingMock = new Mock<IUserMapping>();
 
         private UserLogic GetTestSubject()
         {
-            return new UserLogic(_offreContextMock.Object);
+            var mapperInstance = new UserMapping();
+            _userMappingMock.Setup(mock => mock.ToUserResponseDto(It.IsAny<UserModel>())).Returns((UserModel userModel) => mapperInstance.ToUserResponseDto(userModel));
+            _userMappingMock.Setup(mock => mock.ToUserModel(It.IsAny<UserDto>())).Returns((UserDto userDto) => mapperInstance.ToUserModel(userDto));
+
+            return new UserLogic(_offreContextMock.Object, _userMappingMock.Object);
         }
 
         [TestMethod]
@@ -46,7 +54,7 @@ namespace Offre.Test.User
 
             var users = await userLogic.GetAllUsers();
 
-            Assert.IsTrue(users.Length == 2);
+            Assert.AreEqual(2, users.Length);
         }
 
         [TestMethod]
@@ -158,9 +166,11 @@ namespace Offre.Test.User
 
             _offreContextMock.Setup(mock => mock.Users).Returns(usersMock.Object);
 
-            var modelToUpdate = userList.First();
 
-            await userLogic.UpdateUser(modelToUpdate);
+            await userLogic.UpdateUser(new UserDto
+            {
+                Id = 0
+            });
 
             usersMock.Verify(mock => mock.Update(It.IsAny<UserModel>()), Times.Once);
             _offreContextMock.Verify(mock => mock.SaveChanges(), Times.Once);
@@ -188,11 +198,11 @@ namespace Offre.Test.User
 
             _offreContextMock.Setup(mock => mock.Users).Returns(usersMock.Object);
 
-            var modelToUpdate = userList.First();
-
-            modelToUpdate.Email = "test@offre.pl";
-
-            var updateResult = await userLogic.UpdateUser(modelToUpdate);
+            var updateResult = await userLogic.UpdateUser(new UserDto
+            {
+                Id = 0,
+                Email = "test@offre.pl"
+            });
 
             Assert.IsNotNull(updateResult);
             Assert.IsTrue(updateResult.Email.Equals("test@offre.pl"));
@@ -206,17 +216,10 @@ namespace Offre.Test.User
 
             var userLogic = GetTestSubject();
 
-            var userModel = new UserModel
+            userLogic.AddUser(new UserDto
             {
-                Id = 0,
-                Email = "test@offre.pl",
-                Status = (int)UserStatusEnum.ACTIVE,
-                Password = "QWERTYU",
-                SaveDate = DateTime.Now,
-                ModifyDate = DateTime.Now
-            };
-
-            userLogic.AddUser(userModel);
+                Id = 0
+            });
 
             userSetMock.Verify(mock => mock.Add(It.IsAny<UserModel>()), Times.Once);
             _offreContextMock.Verify(mock => mock.SaveChanges(), Times.Once);

@@ -6,25 +6,25 @@ using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
+using Offre.Abstraction.Dto.Authenticate;
 using Offre.Data;
-using Offre.Data.Models.Authorize;
-using Offre.Logic.Interfaces.Authorize;
+using Offre.Logic.Interfaces.Authenticate;
 using Offre.Validation.AuthorizePrefilters;
 
 
-namespace Offre.Logic.Authorize
+namespace Offre.Logic.Authenticate
 {
-    public class AuthorizeLogic : IAuthorizeLogic
+    public class AuthenticateLogic : IAuthenticateLogic
     {
         private readonly IConfiguration _configuration;
         private readonly IOffreContext _offreContext;
-        public AuthorizeLogic(IConfiguration configuration, IOffreContext offreContext)
+        public AuthenticateLogic(IConfiguration configuration, IOffreContext offreContext)
         {
             _configuration = configuration;
             _offreContext = offreContext;
         }
 
-        public async Task<AuthorizeModel> TryAuthorizeUser(string login, string password)
+        public async Task<AuthenticateResponseDto> TryAuthUser(string login, string password)
         {
             var loginPrefilterResult = new PrefilterLogin(login).MatchPrefilter();
             var passwordPrefilterResult = new PrefilterPassword(password).MatchPrefilter();
@@ -38,7 +38,7 @@ namespace Offre.Logic.Authorize
                 {
                     var token = GenerateToken(user.Id);
 
-                    return new AuthorizeModel
+                    return new AuthenticateResponseDto
                     {
                         Id = user.Id,
                         Email = user.Email,

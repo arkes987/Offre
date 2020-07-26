@@ -1,24 +1,20 @@
 ﻿using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Offre.Controllers.Dto.User;
 using Offre.Logic.Interfaces.UserLogic;
-using System.Linq;
-using Offre.Controllers.Mappings;
+using Offre.Abstraction.Dto.User;
 
 namespace Offre.Controllers.Controllers.User
 {
     [Authorize]
     [ApiController]
     [Route("users")]
-    public class User : ControllerBase
+    public class UserController : ControllerBase
     {
         private readonly IUserLogic _userLogic;
-        private readonly IUserMapping _userMapping;
-        public User(IUserLogic userLogic, IUserMapping userMapping)
+        public UserController(IUserLogic userLogic)
         {
             _userLogic = userLogic;
-            _userMapping = userMapping;
         }
 
         [ProducesResponseType(200)]
@@ -31,7 +27,7 @@ namespace Offre.Controllers.Controllers.User
             if (user == null)
                 return NotFound();
 
-            return Ok(_userMapping.ToUserResponseDto(user));
+            return Ok(user);
         }
 
         [ProducesResponseType(200)]
@@ -41,7 +37,7 @@ namespace Offre.Controllers.Controllers.User
         {
             var users = await _userLogic.GetAllUsers();
 
-            return Ok(users?.Select(_userMapping.ToUserResponseDto).ToArray());
+            return Ok(users);
         }
 
         [ProducesResponseType(200)]
@@ -49,7 +45,7 @@ namespace Offre.Controllers.Controllers.User
         [HttpPost]
         public ActionResult<UserResponseDto> AddUser(UserDto user)
         {
-            var userAdded = _userLogic.AddUser(_userMapping.ToUserModel(user));
+            var userAdded = _userLogic.AddUser(user);
 
             return Ok(userAdded);
         }
@@ -59,12 +55,12 @@ namespace Offre.Controllers.Controllers.User
         [HttpPut("{id}")]
         public async Task<ActionResult<UserResponseDto>> UpdateUser(UserDto user)
         {
-            var updatedUser = await _userLogic.UpdateUser(_userMapping.ToUserModel(user));
+            var updatedUser = await _userLogic.UpdateUser(user);
 
             if (updatedUser == null)
                 return NotFound();
 
-            return Ok(_userMapping.ToUserResponseDto(updatedUser));
+            return Ok(updatedUser);
         }
 
         [ProducesResponseType(200)]

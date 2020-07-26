@@ -1,6 +1,6 @@
-﻿namespace Offre.Controllers.Dto.Authorize
+﻿namespace Offre.Abstraction.Dto.Authenticate
 {
-    public class AuthorizeResponseDto
+    public class AuthenticateResponseDto
     {
         public long Id { get; set; }
         public string Email { get; set; }

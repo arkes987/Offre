@@ -6,7 +6,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
-using Offre.Logic.Authorize;
+using Offre.Logic.Authenticate;
 
 namespace Offre.Test.Authorization
 {
@@ -32,7 +32,7 @@ namespace Offre.Test.Authorization
 
             configurationMock.Setup(mock => mock.GetSection("AppSettings:TokenExpiryTime")).Returns(() => configurationSectionMockExpiryTime.Object);
 
-            var subject = new AuthorizeLogic(configurationMock.Object, null);
+            var subject = new AuthenticateLogic(configurationMock.Object, null);
 
             var token = subject.GenerateToken(userId);
 

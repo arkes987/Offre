@@ -1,9 +1,8 @@
 ﻿using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Offre.Controllers.Dto.Authorize;
-using Offre.Data.Models.Authorize;
-using Offre.Logic.Interfaces.Authorize;
+using Offre.Abstraction.Dto.Authenticate;
+using Offre.Logic.Interfaces.Authenticate;
 
 namespace Offre.Controllers.Controllers.Authorize
 {
@@ -11,9 +10,9 @@ namespace Offre.Controllers.Controllers.Authorize
     [Route("authorize")]
     public class Authorize : ControllerBase
     {
-        private readonly IAuthorizeLogic _authorizeLogic;
+        private readonly IAuthenticateLogic _authorizeLogic;
 
-        public Authorize(IAuthorizeLogic authorizeLogic)
+        public Authorize(IAuthenticateLogic authorizeLogic)
         {
             _authorizeLogic = authorizeLogic;
         }
@@ -21,26 +20,16 @@ namespace Offre.Controllers.Controllers.Authorize
         [HttpPost]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public async Task<IActionResult> AuthorizeUser(string login, string password)
+        public async Task<ActionResult<AuthenticateResponseDto>> AuthorizeUser(string login, string password)
         {
-            var user = await _authorizeLogic.TryAuthorizeUser(login, password);
+            var user = await _authorizeLogic.TryAuthUser(login, password);
 
             if (user == null)
             {
                 return BadRequest("Invalid login or password.");
             }
 
-            return Ok(ToAuthorizeResponseDto(user));
-        }
-
-        private AuthorizeResponseDto ToAuthorizeResponseDto(AuthorizeModel authorizeModel)
-        {
-            return new AuthorizeResponseDto
-            {
-                Id = authorizeModel.Id,
-                Email = authorizeModel.Email,
-                Token = authorizeModel.Token
-            };
+            return Ok(user);
         }
     }
 }

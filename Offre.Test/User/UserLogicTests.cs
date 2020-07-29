@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Security.Cryptography.Xml;
-using System.Threading.Tasks;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using MockQueryable.Moq;
 using Moq;
@@ -13,6 +8,10 @@ using Offre.Data;
 using Offre.Data.Enums;
 using Offre.Data.Models.User;
 using Offre.Logic.UserLogic;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace Offre.Test.User
 {
@@ -32,7 +31,7 @@ namespace Offre.Test.User
         }
 
         [TestMethod]
-        public async Task GetAllUsers_GetAllUsersFromTable_ReturnsValidUserCount()
+        public async Task GetAllUsers_GetsAllUsersFromTable_ReturnsValidUserCount()
         {
             var userLogic = GetTestSubject();
 
@@ -45,6 +44,10 @@ namespace Offre.Test.User
                 new UserModel
                 {
                     Id = 1
+                },
+                new UserModel
+                {
+                    Id = 3
                 }
             };
 
@@ -54,7 +57,7 @@ namespace Offre.Test.User
 
             var users = await userLogic.GetAllUsers();
 
-            Assert.AreEqual(2, users.Length);
+            Assert.AreEqual(3, users.Length);
         }
 
         [TestMethod]
@@ -80,11 +83,11 @@ namespace Offre.Test.User
 
             var user = await userLogic.GetById(0);
 
-            Assert.IsTrue(user.Id == 0);
+            Assert.AreEqual(0, user.Id);
         }
 
         [TestMethod]
-        public async Task SoftDeleteUser_DeletesUserFromSet()
+        public async Task SoftDeleteUser_SoftDeleteUserInDatabase_ProperlyReturnsUpdatedRecordWithDeletedStatus()
         {
             var userLogic = GetTestSubject();
 
@@ -110,11 +113,11 @@ namespace Offre.Test.User
             var updateResult = await userLogic.SoftDeleteUser(modelToDelete.Id);
 
             Assert.IsNotNull(updateResult);
-            Assert.IsTrue(updateResult.Status == (int)UserStatusEnum.DELETED);
+            Assert.AreEqual((int)UserStatusEnum.DELETED, updateResult.Status);
         }
 
         [TestMethod]
-        public async Task SoftDeleteUser_CallsUpdateAndSavesContext()
+        public async Task SoftDeleteUser_SoftDeleteUserInDatabase_CallsSaveChanges()
         {
             var userLogic = GetTestSubject();
 
@@ -139,12 +142,11 @@ namespace Offre.Test.User
 
             await userLogic.SoftDeleteUser(modelToDelete.Id);
 
-            usersMock.Verify(mock => mock.Update(It.IsAny<UserModel>()), Times.Once);
             _offreContextMock.Verify(mock => mock.SaveChanges(), Times.Once);
         }
 
         [TestMethod]
-        public async Task UpdateUser_CallsUpdateAndSavesContext()
+        public async Task UpdateUser_UpdateUserInDatabase_CallsSaveChanges()
         {
 
             var userLogic = GetTestSubject();
@@ -172,7 +174,6 @@ namespace Offre.Test.User
                 Id = 0
             });
 
-            usersMock.Verify(mock => mock.Update(It.IsAny<UserModel>()), Times.Once);
             _offreContextMock.Verify(mock => mock.SaveChanges(), Times.Once);
         }
 
@@ -205,11 +206,114 @@ namespace Offre.Test.User
             });
 
             Assert.IsNotNull(updateResult);
-            Assert.IsTrue(updateResult.Email.Equals("test@offre.pl"));
+            Assert.AreEqual("test@offre.pl", updateResult.Email);
         }
 
         [TestMethod]
-        public void AddUser_AddsUserAndSaveContext()
+        public async Task UpdateUser_UpdatesUser_ProperlyPropagateChanges()
+        {
+            var userLogic = GetTestSubject();
+
+            var userList = new List<UserModel>
+            {
+                new UserModel
+                {
+                    Id = 0,
+                    Status = (int)UserStatusEnum.ACTIVE,
+                    Email = "test@offre.pl",
+                    Password = "ABCD!@#",
+                    ModifyDate = DateTime.Now,
+                    SaveDate = DateTime.Now
+                }
+            };
+
+            var usersMock = userList.AsQueryable().BuildMockDbSet();
+
+            _offreContextMock.Setup(mock => mock.Users).Returns(usersMock.Object);
+
+
+            var updateResult = await userLogic.UpdateUser(new UserDto
+            {
+                Id = 0,
+                Email = "support@offre.pl"
+            });
+
+
+            Assert.AreEqual("support@offre.pl", updateResult.Email);
+            
+        }
+
+        [TestMethod]
+        public async Task UpdateUser_UpdatesUser_NotPropagateChangesWithIgnoreAttribute()
+        {
+            var userLogic = GetTestSubject();
+
+            var userList = new List<UserModel>
+            {
+                new UserModel
+                {
+                    Id = 0,
+                    Status = (int)UserStatusEnum.ACTIVE,
+                    Email = "test@offre.pl",
+                    Password = "ABCD!@#",
+                    ModifyDate = DateTime.Now,
+                    SaveDate = DateTime.Now
+                }
+            };
+
+            var usersMock = userList.AsQueryable().BuildMockDbSet();
+
+            _offreContextMock.Setup(mock => mock.Users).Returns(usersMock.Object);
+
+
+            var updateResult = await userLogic.UpdateUser(new UserDto
+            {
+                Id = 0,
+                Status = (int)UserStatusEnum.DELETED
+            });
+
+
+            Assert.AreEqual((int)UserStatusEnum.ACTIVE, updateResult.Status);
+
+        }
+
+        [TestMethod]
+        public void AddUser_AddsNewUserToDatabase_ProperlyReturnsNewUser()
+        {
+            var userList = new List<UserModel>
+            {
+                new UserModel
+                {
+                    Id = 0,
+                    Status = (int)UserStatusEnum.ACTIVE
+                },
+                new UserModel
+                {
+                    Id = 1
+                }
+            };
+
+            var usersMock = userList.AsQueryable().BuildMockDbSet();
+
+            _offreContextMock.Setup(mock => mock.Users.Add(It.IsAny<UserModel>())).Callback((UserModel userModel) =>
+            {
+                userList.Add(userModel);
+            });
+
+            var userLogic = GetTestSubject();
+
+            var userResponseDto = userLogic.AddUser(new UserDto
+            {
+                Id = 2,
+                Email = "test@offre.pl"
+            });
+
+            Assert.AreEqual(2, userResponseDto.Id);
+            Assert.AreEqual("test@offre.pl", userResponseDto.Email);
+        }
+
+        [TestMethod]
+        public void AddUser_AddsNewUserToDatabase_CallsSaveChanges()
         {
             Mock<DbSet<UserModel>> userSetMock = new Mock<DbSet<UserModel>>();
             _offreContextMock.Setup(mock => mock.Users).Returns(userSetMock.Object);

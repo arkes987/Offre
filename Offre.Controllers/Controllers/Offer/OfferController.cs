@@ -6,7 +6,7 @@ namespace Offre.Controllers.Controllers.Offer
     [Authorize]
     [ApiController]
     [Route("offer")]
-    public class Offer : ControllerBase
+    public class OfferController : ControllerBase
     {
         [HttpGet]
         public object Get()

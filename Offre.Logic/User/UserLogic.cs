@@ -1,12 +1,13 @@
-﻿using System;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using Offre.Abstraction.Dto.User;
 using Offre.Abstraction.Mappings.User;
 using Offre.Data;
 using Offre.Data.Enums;
 using Offre.Logic.Interfaces.UserLogic;
+using Offre.Logic.Mappings.User;
+using System;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace Offre.Logic.UserLogic
 {
@@ -45,7 +46,6 @@ namespace Offre.Logic.UserLogic
             {
                 user.Status = (int)UserStatusEnum.DELETED;
                 user.ModifyDate = DateTime.Now;
-                _offreContext.Users.Update(user);
                 _offreContext.SaveChanges();
 
                 return _userMapping.ToUserResponseDto(user);
@@ -63,9 +63,7 @@ namespace Offre.Logic.UserLogic
                 return null;
             }
 
-            //here need to populate changes from user dto to existing user on db
-            existingUser.Email = user.Email;
-            _offreContext.Users.Update(existingUser);
+            existingUser.ShallowPopulateChanges(_userMapping.ToUserModel(user));
 
             _offreContext.SaveChanges();
 

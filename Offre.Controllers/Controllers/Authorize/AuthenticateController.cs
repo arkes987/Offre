@@ -8,11 +8,11 @@ namespace Offre.Controllers.Controllers.Authorize
 {
     [ApiController]
     [Route("authorize")]
-    public class Authorize : ControllerBase
+    public class AuthenticateController : ControllerBase
     {
         private readonly IAuthenticateLogic _authorizeLogic;
 
-        public Authorize(IAuthenticateLogic authorizeLogic)
+        public AuthenticateController(IAuthenticateLogic authorizeLogic)
         {
             _authorizeLogic = authorizeLogic;
         }

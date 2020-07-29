@@ -3,11 +3,6 @@ using Offre.Data.Models.User;
 
 namespace Offre.Abstraction.Mappings.User
 {
-    public interface IUserMapping
-    {
-        UserResponseDto ToUserResponseDto(UserModel user);
-        UserModel ToUserModel(UserDto user);
-    }
     public class UserMapping : IUserMapping
     {
         public UserModel ToUserModel(UserDto user) => new UserModel
@@ -16,11 +11,17 @@ namespace Offre.Abstraction.Mappings.User
             Email = user.Email
         };
 
-        public UserResponseDto ToUserResponseDto(UserModel user) => new UserResponseDto
+        public UserResponseDto ToUserResponseDto(UserModel user)
         {
-            Id = user.Id,
-            Email = user.Email,
-            Status = user.Status
-        };
+            if (user == null)
+                return null;
+
+            return new UserResponseDto
+            {
+                Id = user.Id,
+                Email = user.Email,
+                Status = user.Status
+            };
+        }
     }
 }
